@@ -3,21 +3,26 @@ import { AnimatePresence } from 'framer-motion'
 import { HeroSection } from '../components/HeroSection'
 import { UploadCard } from '../components/UploadCard'
 import { ResultCard } from '../components/ResultCard'
-import { useUpload } from '../hooks/useUpload'
+import { useP2PUpload } from '../hooks/useP2PUpload'
+import { ReceiveCard } from '../components/ReceiveCard'
 import { config } from '../config'
 import { LiquidOcean } from '../components/ui/liquid-ocean'
 import { LogoSlider } from '../components/ui/logo-slider'
 
 export function Home() {
   const uploadSectionRef = useRef(null)
-  const { state, result, error, upload, reset } = useUpload()
+  const { state, result, error, upload, reset, progress } = useP2PUpload()
+
+  const urlParams = new URLSearchParams(window.location.search)
+  const peerId = urlParams.get('peer')
+  const isReceiver = !!peerId
 
   const scrollToUpload = () => {
     uploadSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
-  const isUploading = state === 'uploading'
-  const isSuccess = state === 'success'
+  const isUploading = state === 'preparing'
+  const isSuccess = state === 'waiting' || state === 'sending' || state === 'success'
 
   return (
     <div className="min-h-screen flex flex-col relative bg-transparent">
@@ -53,13 +58,19 @@ export function Home() {
         </div>
       </header>
 
-      <HeroSection onCtaClick={scrollToUpload} />
+      {isReceiver ? (
+        <main className="flex-1 flex flex-col justify-center items-center px-4 pb-6 gap-6 w-full">
+          <ReceiveCard peerId={peerId} />
+        </main>
+      ) : (
+        <>
+          <HeroSection onCtaClick={scrollToUpload} />
 
-      <main className="flex-1 flex flex-col justify-center items-center px-4 pb-6 gap-6">
-        <div ref={uploadSectionRef} className="w-full max-w-2xl">
-          <AnimatePresence mode="wait">
-            {isSuccess && result ? (
-              <ResultCard key="result" result={result} onReset={reset} />
+          <main className="flex-1 flex flex-col justify-center items-center px-4 pb-6 gap-6">
+            <div ref={uploadSectionRef} className="w-full max-w-2xl">
+              <AnimatePresence mode="wait">
+                {isSuccess && result ? (
+                  <ResultCard key="result" result={result} onReset={reset} state={state} progress={progress} />
             ) : (
               <UploadCard
                 key="upload"
@@ -94,7 +105,9 @@ export function Home() {
             />
           </div>
         )}
-      </main>
+          </main>
+        </>
+      )}
 
         <footer className="py-4 flex justify-center border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
           <div className="text-xs sm:text-sm px-4 py-2 rounded-full" style={{ backgroundColor: '#1e0a2d', border: '1px solid rgba(139, 92, 246, 0.2)', color: '#c4b5fd' }}>

@@ -9,9 +9,9 @@ import { downloadQRAsPNG } from '../utils/qrHelpers'
 
 const QR_CANVAS_ID = 'qrly-qr-canvas'
 
-export function ResultCard({ result, onReset }) {
+export function ResultCard({ result, onReset, state, progress }) {
   const [copied, setCopied] = useState(false)
-  const { signedUrl, fileInfo, expiresAt } = result
+  const { url: signedUrl, name, size } = result
 
   const handleCopy = async () => {
     const ok = await copyToClipboard(signedUrl)
@@ -34,7 +34,7 @@ export function ResultCard({ result, onReset }) {
     }
   }
 
-  const fileTypeLabel = getFileTypeLabel({ name: fileInfo.name })
+  const fileTypeLabel = getFileTypeLabel({ name })
 
   return (
     <motion.div
@@ -49,7 +49,21 @@ export function ResultCard({ result, onReset }) {
             <h2 className="text-xl font-bold mb-1" style={{ color: '#f1f5f9' }}>
               Your QR Code is Ready
             </h2>
-            <CountdownTimer expiresAt={expiresAt} />
+            {state === 'waiting' && (
+              <p className="text-sm font-medium animate-pulse" style={{ color: '#f59e0b' }}>
+                Waiting for receiver... Do NOT close this tab.
+              </p>
+            )}
+            {state === 'sending' && (
+              <p className="text-sm font-medium" style={{ color: '#8b5cf6' }}>
+                Sending file... {progress}%
+              </p>
+            )}
+            {state === 'success' && (
+              <p className="text-sm font-medium" style={{ color: '#10b981' }}>
+                File successfully transferred!
+              </p>
+            )}
           </div>
           <button onClick={onReset} className="btn-secondary flex items-center gap-2 text-sm py-2 px-3">
             <RotateCcw size={14} />
@@ -83,11 +97,11 @@ export function ResultCard({ result, onReset }) {
               className="rounded-xl p-4 mb-5 space-y-3"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
-              <MetaRow icon={<FileText size={14} style={{ color: '#8b5cf6' }} />} label="File name" value={fileInfo.name} truncate />
+              <MetaRow icon={<FileText size={14} style={{ color: '#8b5cf6' }} />} label="File name" value={name} truncate />
               <div className="h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
               <MetaRow icon={<Tag size={14} style={{ color: '#8b5cf6' }} />} label="File type" value={fileTypeLabel} />
               <div className="h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
-              <MetaRow icon={<HardDrive size={14} style={{ color: '#8b5cf6' }} />} label="File size" value={formatFileSize(fileInfo.size)} />
+              <MetaRow icon={<HardDrive size={14} style={{ color: '#8b5cf6' }} />} label="File size" value={formatFileSize(size)} />
             </div>
 
             <div
