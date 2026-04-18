@@ -2,9 +2,9 @@ import { useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { validateFile } from '../utils/fileValidation'
 import { generateUniqueFileName } from '../utils/fileHelpers'
+import { config } from '../config'
 
 const BUCKET = 'documents'
-const SIGNED_URL_EXPIRY = 60 // 1 minute in seconds
 
 export function useUpload() {
   const [state, setState] = useState('idle') // 'idle' | 'uploading' | 'success' | 'error'
@@ -38,7 +38,7 @@ export function useUpload() {
 
       const { data: signedData, error: signedError } = await supabase.storage
         .from(BUCKET)
-        .createSignedUrl(uniqueName, SIGNED_URL_EXPIRY)
+        .createSignedUrl(uniqueName, config.expirySeconds)
 
       if (signedError || !signedData?.signedUrl) {
         throw new Error(signedError?.message ?? 'Failed to generate signed URL.')
@@ -52,7 +52,7 @@ export function useUpload() {
           size: file.size,
           path: uniqueName,
         },
-        expiresAt: Date.now() + SIGNED_URL_EXPIRY * 1000,
+        expiresAt: Date.now() + config.expirySeconds * 1000,
       })
 
       setState('success')

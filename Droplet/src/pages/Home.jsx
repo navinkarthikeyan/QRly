@@ -4,6 +4,9 @@ import { HeroSection } from '../components/HeroSection'
 import { UploadCard } from '../components/UploadCard'
 import { ResultCard } from '../components/ResultCard'
 import { useUpload } from '../hooks/useUpload'
+import { config } from '../config'
+import { LiquidOcean } from '../components/ui/liquid-ocean'
+import { LogoSlider } from '../components/ui/logo-slider'
 
 export function Home() {
   const uploadSectionRef = useRef(null)
@@ -17,8 +20,20 @@ export function Home() {
   const isSuccess = state === 'success'
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto w-full">
+    <div className="min-h-screen flex flex-col relative bg-transparent">
+      {/* Full Page Animated Ocean Background */}
+      <div className="fixed inset-0 z-0">
+        <LiquidOcean
+          backgroundColor={0x070b14}
+          accentColor={0x7c3aed}
+          showBoats={false}
+          waveSpeed={0.05}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <header className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black"
@@ -58,25 +73,35 @@ export function Home() {
         </div>
 
         {!isSuccess && (
-          <div className="flex flex-wrap justify-center gap-3 mt-4">
-            {['⚡ Instant upload', '🔐 Private & secure', '⏱ 1-minute expiry', '📱 Mobile friendly', '🆓 Always free'].map((f) => (
-              <span
-                key={f}
-                className="text-sm px-4 py-1.5 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#94a3b8' }}
-              >
-                {f}
-              </span>
-            ))}
+          <div className="w-full max-w-5xl mt-4">
+            <LogoSlider
+              logos={[...Array(2)].flatMap(() =>
+                ['⚡ Instant upload', '🔐 Private & secure', `⏱ ${config.expiryText} expiry`, '📱 Mobile friendly', '🆓 Always free'].map((f, i) => (
+                  <span
+                    key={`${f}-${i}`}
+                    className="text-sm px-4 py-1.5 rounded-full whitespace-nowrap"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#94a3b8' }}
+                  >
+                    {f}
+                  </span>
+                ))
+              )}
+              speed={40}
+              direction="left"
+              pauseOnHover={true}
+              blurLayers={8}
+              blurIntensity={1}
+            />
           </div>
         )}
       </main>
 
-      <footer className="py-6 text-center border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-        <p className="text-sm" style={{ color: '#475569' }}>
-          Built with ❤️ · Files expire after 1 min· @navinkarthikeyan
-        </p>
-      </footer>
+        <footer className="py-6 flex justify-center border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="text-xs sm:text-sm px-4 py-2 rounded-full" style={{ backgroundColor: '#1e0a2d', border: '1px solid rgba(139, 92, 246, 0.2)', color: '#c4b5fd' }}>
+            Built with ❤️ · Files expire after {config.expiryShortText} · @navinkarthikeyan
+          </div>
+        </footer>
+      </div>
     </div>
   )
 }
