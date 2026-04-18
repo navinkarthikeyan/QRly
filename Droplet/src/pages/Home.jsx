@@ -33,7 +33,7 @@ export function Home() {
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto w-full">
+        <header className="flex items-center justify-between px-6 py-3 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black"
@@ -55,7 +55,7 @@ export function Home() {
 
       <HeroSection onCtaClick={scrollToUpload} />
 
-      <main className="flex-1 flex flex-col items-center px-4 pb-24 gap-8">
+      <main className="flex-1 flex flex-col justify-center items-center px-4 pb-6 gap-6">
         <div ref={uploadSectionRef} className="w-full max-w-2xl">
           <AnimatePresence mode="wait">
             {isSuccess && result ? (
@@ -96,7 +96,7 @@ export function Home() {
         )}
       </main>
 
-        <footer className="py-6 flex justify-center border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <footer className="py-4 flex justify-center border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
           <div className="text-xs sm:text-sm px-4 py-2 rounded-full" style={{ backgroundColor: '#1e0a2d', border: '1px solid rgba(139, 92, 246, 0.2)', color: '#c4b5fd' }}>
             Built with ❤️ · Files expire after {config.expiryShortText} · @navinkarthikeyan
           </div>
