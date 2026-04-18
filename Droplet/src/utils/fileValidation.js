@@ -22,7 +22,7 @@ export const ALLOWED_TYPES_LABEL = ALLOWED_EXTENSIONS.map(e => `.${e}`).join(', 
 export function validateFile(file) {
   const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
 
-  if (!ALLOWED_EXTENSIONS.includes(ext) && !ALLOWED_MIME_TYPES.includes(file.type)) {
+  if (!ALLOWED_EXTENSIONS.includes(ext) || (file.type && !ALLOWED_MIME_TYPES.includes(file.type))) {
     return {
       valid: false,
       error: `Unsupported file type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}`,
